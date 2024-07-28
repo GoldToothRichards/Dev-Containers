@@ -3,44 +3,34 @@
 # Set the Base Image from a build-arg
 ARG BASE_IMAGE=nvcr.io/nvidia/rapidsai/base:24.06-cuda12.2-py3.11
 FROM ${BASE_IMAGE}
-
 USER root
 
 # Make sure terminal does not wait at a prompt. Set timezone.
 ENV TZ=America/New_York DEBIAN_FRONTEND=noninteractive
 
-# This system may have been minimized by removing packages and content that are
-# not required on a system that users do not log into.
-# To restore this content, including manpages, you can run the 'unminimize'
-# command. You will still need to ensure the 'man-db' package is installed.
-# This process is slow, so we do a separate step so that it can be cached.
-# RUN apt-get update && apt-get install --no-install-recommends -y \
-#     man-db \
-#     && rm -rf /var/lib/apt/lists/*
-# RUN yes | unminimize
-
-
-ARG POETRY_VERSION=1.8.2
-ARG POETRY_HOME="/opt/poetry"
-
 # Use bash shell
 SHELL ["/bin/bash", "-c"]
 
-# Install system packages required at runtime
+# Install system packages required for poetry
 RUN apt-get update && apt-get install --no-install-recommends -y \
     curl \
     build-essential \
-    software-properties-common \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Poetry - respects $POETRY_VERSION & $POETRY_HOME
+# Install Poetry
+ARG POETRY_VERSION=1.8.2
+ARG POETRY_HOME="/opt/poetry"
 ENV POETRY_HOME=${POETRY_HOME} \
     POETRY_VERSION=${POETRY_VERSION}
 RUN curl -sSL https://install.python-poetry.org/ | python3
 
 # Add Poetry to the path
 ENV PATH="$POETRY_HOME/bin:$PATH"
-ENV PATH="/usr/bin:$PATH"
+
+# Install system packages required for git
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
 
 # Add the latest git package
 RUN add-apt-repository ppa:git-core/ppa
