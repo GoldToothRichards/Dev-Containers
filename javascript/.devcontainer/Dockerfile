@@ -1,16 +1,28 @@
 ########################################################################################
 
 # Set the Base Image from a build-arg
-ARG BASE_IMAGE=node:20.16.0
+ARG BASE_IMAGE=ubuntu:22.04
 FROM ${BASE_IMAGE}
 USER root
 
 # Make sure terminal does not wait at a prompt. Set timezone.
 ENV TZ=America/New_York DEBIAN_FRONTEND=noninteractive
 
+# This system may have been minimized by removing packages and content that are
+# not required on a system that users do not log into.
+# To restore this content, including manpages, you can run the 'unminimize'
+# command. You will still need to ensure the 'man-db' package is installed.
+# This process is slow, so we do a separate step so that it can be cached.
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    man-db \
+    && rm -rf /var/lib/apt/lists/*
+RUN yes | unminimize
+
 # Install system packages required for git
 RUN apt-get update && apt-get install --no-install-recommends -y \
     software-properties-common \
+    gnupg2 \
+    dirmngr \
     python3-launchpadlib \
     && rm -rf /var/lib/apt/lists/*
 
@@ -49,7 +61,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 # Read user input
 ARG USERNAME=dev
-ARG USER_UID=1001
+ARG USER_UID=1000
 ARG USER_GID=2000
 
 # Create the user with sudo permissions

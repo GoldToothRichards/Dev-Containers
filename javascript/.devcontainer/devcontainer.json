@@ -1,79 +1,83 @@
 {
-    "name": "Existing Dockerfile",
-    "build": {
-      "context": ".",
-      "dockerfile": "Dockerfile",
-      "args": {
-        "USERNAME": "${localEnv:USER}"
-      }
+  "name": "Existing Dockerfile",
+  "build": {
+    "context": ".",
+    "dockerfile": "Dockerfile",
+    "args": {
+      "USERNAME": "${localEnv:USER}"
+    }
+  },
+  "mounts": [
+    "source=${localEnv:USER}-command-history,target=/commandhistory,type=volume",
+    "source=/home/${localEnv:USER}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind"
+  ],
+  "runArgs": ["--network=host"],
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/${localEnv:USER}/workspace/app,type=bind",
+  "workspaceFolder": "/home/${localEnv:USER}/workspace/app",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "configureZshAsDefaultShell": true
     },
-    "mounts": [
-      "source=${localEnv:USER}-command-history,target=/commandhistory,type=volume",
-      "source=/home/${localEnv:USER}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind"
-    ],
-    "runArgs": ["--network=host"],
-    "workspaceMount": "source=${localWorkspaceFolder},target=/home/${localEnv:USER}/workspace/app,type=bind",
-    "workspaceFolder": "/home/${localEnv:USER}/workspace/app",
-    "features": {
-      "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
-      "ghcr.io/devcontainers/features/common-utils:2": {
-        "configureZshAsDefaultShell": true
-      },
-      "ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {
-        "omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions https://github.com/zsh-users/zsh-syntax-highlighting"
-      },
-      "ghcr.io/dhoeric/features/hadolint:1": {},
-      "ghcr.io/eitsupi/devcontainer-features/jq-likes:2": {
-        "jqVersion": "latest",
-        "yqVersion": "latest",
-        "xqVersion": "latest"
-      },
-      "ghcr.io/devcontainers-contrib/features/exa:1": {},
-      "ghcr.io/devcontainers/features/go:1": {},
-      "ghcr.io/devcontainers-contrib/features/pnpm:2": {},
-      "ghcr.io/michidk/devcontainers-features/bun:1": {},
-      "ghcr.io/devcontainers-contrib/features/vtop:2": {}
+    "ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {
+      "omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions https://github.com/zsh-users/zsh-syntax-highlighting"
     },
-    "customizations": {
-      "vscode": {
-        "settings": {
-          "dotfiles.repository": "https://github.com/GoldToothRichards/dotfiles",
-          "dotfiles.targetPath": "/home/${localEnv:USER}/dotfiles",
-          "dotfiles.installCommand": "RCRC=/home/${localEnv:USER}/dotfiles/rcrc rcup -f"
-        },
-        "extensions": [
-          "ms-vscode-remote.vscode-remote-extensionpack",
-          "redhat.vscode-yaml",
-          "tamasfe.even-better-toml",
-          "esbenp.prettier-vscode",
-          "GitHub.copilot",
-          "mhutchie.git-graph",
-          "donjayamanne.githistory",
-          "mikestead.dotenv",
-          "ms-azuretools.vscode-docker",
-          "foxundermoon.shell-format",
-          "wmaurer.change-case",
-          "dsznajder.es7-react-js-snippets",
-          "Zarifprogrammer.tailwind-snippets",
-          "christian-kohler.npm-intellisense",
-          "bradlc.vscode-tailwindcss",
-          "ritwickdey.LiveServer",
-          "ChakrounAnas.turbo-console-log",
-          "formulahendry.auto-rename-tag",
-          "GitHub.github-vscode-theme",
-          "ecmel.vscode-html-css"
-        ]
-      }
+    "ghcr.io/dhoeric/features/hadolint:1": {},
+    "ghcr.io/eitsupi/devcontainer-features/jq-likes:2": {
+      "jqVersion": "latest",
+      "yqVersion": "latest",
+      "xqVersion": "latest"
     },
-    "postCreateCommand": [
-      "/bin/sh",
-      "-c",
-      "git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k && go install github.com/justjanne/powerline-go@latest"
-    ],
-  
-    "postStartCommand": [
-      "/bin/sh",
-      "-c",
-      "sudo chown -R ${localEnv:USER}:${localEnv:USER} /usr/local/share/zsh/site-functions && RCRC=/home/${localEnv:USER}/dotfiles/rcrc rcup -f"
-    ]
-  }
+    "ghcr.io/devcontainers-contrib/features/exa:1": {},
+    "ghcr.io/devcontainers/features/go:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    },
+    "ghcr.io/devcontainers-contrib/features/pnpm:2": {},
+    "ghcr.io/michidk/devcontainers-features/bun:1": {},
+    "ghcr.io/devcontainers-contrib/features/vtop:2": {}
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "dotfiles.repository": "https://github.com/GoldToothRichards/dotfiles",
+        "dotfiles.targetPath": "/home/${localEnv:USER}/dotfiles",
+        "dotfiles.installCommand": "RCRC=/home/${localEnv:USER}/dotfiles/rcrc rcup -f"
+      },
+      "extensions": [
+        "ms-vscode-remote.vscode-remote-extensionpack",
+        "redhat.vscode-yaml",
+        "tamasfe.even-better-toml",
+        "esbenp.prettier-vscode",
+        "GitHub.copilot",
+        "mhutchie.git-graph",
+        "donjayamanne.githistory",
+        "mikestead.dotenv",
+        "ms-azuretools.vscode-docker",
+        "foxundermoon.shell-format",
+        "wmaurer.change-case",
+        "dsznajder.es7-react-js-snippets",
+        "Zarifprogrammer.tailwind-snippets",
+        "christian-kohler.npm-intellisense",
+        "bradlc.vscode-tailwindcss",
+        "ritwickdey.LiveServer",
+        "ChakrounAnas.turbo-console-log",
+        "formulahendry.auto-rename-tag",
+        "GitHub.github-vscode-theme",
+        "ecmel.vscode-html-css",
+        "astro-build.astro-vscode",
+        "Vue.volar"
+      ]
+    }
+  },
+  "postCreateCommand": [
+    "/bin/sh",
+    "-c",
+    "git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k && go install github.com/justjanne/powerline-go@latest"
+  ],
+  "postStartCommand": [
+    "/bin/sh",
+    "-c",
+    "sudo chown -R ${localEnv:USER}:${localEnv:USER} /usr/local/share/zsh/site-functions && RCRC=/home/${localEnv:USER}/dotfiles/rcrc rcup -f"
+  ]
+}
